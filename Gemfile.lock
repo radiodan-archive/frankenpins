@@ -1,0 +1,16 @@
+PATH
+  remote: .
+  specs:
+    things (0.0.0)
+      wiringpi (>= 1.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    wiringpi (1.1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  things!
