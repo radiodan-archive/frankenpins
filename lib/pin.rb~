@@ -6,11 +6,6 @@ require 'wiringpi2'
 module Things
   # Represents a GPIO pin on the Raspberry Pi
   class Pin
-    INPUT = 0
-    PUD_OFF = 0
-    PUD_DOWN = 1
-    PUD_UP = 2
-
     attr_reader :pin, :last_value, :value, :direction, :invert
    
     def wiring_to_gpio(pin)
@@ -40,7 +35,6 @@ module Things
       @invert = options[:invert]
       @trigger = options[:trigger]
       @pull = options[:pull]
-      @io = options[:io]
 
       raise "Invalid direction. Options are :in or :out" unless [:in, :out].include? @direction
       raise "Invalid trigger. Options are :rising, :falling, or :both" unless [:rising, :falling, :both].include? @trigger
@@ -52,11 +46,11 @@ module Things
         #pull_dir = @pull == :up ? "up" : "down"
 	#`gpio mode #{gpio_to_wiring(@pin)} #{pull_dir}`
 
-        wiring_pin = gpio_to_wiring(@pin)
-        puts "pin_mode(#{wiring_pin}, #{INPUT})"
-        puts "pullUpDnControl(#{wiring_pin}, #{PUD_UP})"
-        #@io.pin_mode(wiring_pin,INPUT)
-        @io.pullUpDnControl(wiring_pin, PUD_UP)
+        INPUT = 0
+        PUD_UP = 2
+        io = WiringPi::GPIO.new
+        io.pin_mode(@pin,INPUT)
+        io.pullUpDnControl(@pin, PUD_UP)
       end
 
       read 

@@ -1,9 +1,11 @@
-require 'wiringpi'
+require 'bundler/setup'
 require_relative './pin'
 
 module Things
   extend self
   def watch(options={}, &block)
+    io = WiringPi::GPIO.new
+    options[:io] = io
     Thread.new do 
       pin = Pin.new(options)
       loop do

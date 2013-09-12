@@ -1,16 +1,15 @@
-PATH
-  remote: .
+GIT
+  remote: git://github.com/libbymiller/WiringPi2-Ruby.git
+  revision: 94ea4b6cc6bbdc5a133c1678673c65c24d6a04d7
   specs:
-    things (0.0.0)
-      wiringpi (>= 1.1.0)
+    wiringpi2 (1.0.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    wiringpi (1.1.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  things!
+  wiringpi2!
