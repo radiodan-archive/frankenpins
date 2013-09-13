@@ -1,11 +1,14 @@
 # A modified version of PiPiper's pin class
 #   https://github.com/jwhitehorn/pi_piper/blob/master/lib/pi_piper/pin.rb
 #
-require 'wiringpi2'
+require_relative './utils'
+require_relative './wiring_pi_singleton'
 
-module Things
+module Frankenpins
   # Represents a GPIO pin on the Raspberry Pi
   class Pin
+    include Utils
+    
     INPUT = 0
     PUD_OFF = 0
     PUD_DOWN = 1
@@ -40,7 +43,7 @@ module Things
       @invert = options[:invert]
       @trigger = options[:trigger]
       @pull = options[:pull]
-      @io = options[:io]
+      @io = WiringPiSingleton.gpio_instance
 
       raise "Invalid direction. Options are :in or :out" unless [:in, :out].include? @direction
       raise "Invalid trigger. Options are :rising, :falling, or :both" unless [:rising, :falling, :both].include? @trigger
@@ -53,10 +56,11 @@ module Things
 	#`gpio mode #{gpio_to_wiring(@pin)} #{pull_dir}`
 
         wiring_pin = gpio_to_wiring(@pin)
-        puts "pin_mode(#{wiring_pin}, #{INPUT})"
-        puts "pullUpDnControl(#{wiring_pin}, #{PUD_UP})"
         #@io.pin_mode(wiring_pin,INPUT)
-        @io.pullUpDnControl(wiring_pin, PUD_UP)
+        direction = PUD_UP   if @pull == :up
+        direction = PUD_DOWN if @pull == :down
+        puts "direction #{direction}"
+        @io.pullUpDnControl(wiring_pin, direction)
       end
 
       read 
