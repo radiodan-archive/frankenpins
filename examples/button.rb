@@ -1,7 +1,8 @@
-require_relative '../lib/things'
+require_relative '../lib/frankenpins'
 
-Things.watch :pin => 0, :pull => :up do |pin|
-  puts "Value changed #{pin.value}"
+button = Frankenpins::Button.new(:pin => 0, :pull => :up)
+button.on :pressed do
+  puts "Button pressed"
 end
 
-Things.wait
+Frankenpins.wait
