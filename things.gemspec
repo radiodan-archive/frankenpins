@@ -1,12 +1,12 @@
 Gem::Specification.new do |s|
-  s.name        = 'things'
+  s.name        = 'frankenpins'
   s.version     = '0.0.0'
   s.date        = '2013-08-28'
   s.summary     = "Connect buttons etc to your Rapsberry Pi"
   s.description = "Connect buttons etc to your Rapsberry Pi"
   s.authors     = ["Andrew Nicolaou"]
   s.email       = 'andrew.nicolaou@bbc.co.uk'
-  s.files       = ["lib/things.rb"]
+  s.files       = ["lib/frankenpins.rb"]
   s.homepage    =
     ''
   s.license       = 'Apache'
