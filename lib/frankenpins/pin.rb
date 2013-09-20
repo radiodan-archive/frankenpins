@@ -8,26 +8,18 @@ module Frankenpins
   # Represents a GPIO pin on the Raspberry Pi
   class Pin
     include Utils
-    
+
     INPUT = 0
     PUD_OFF = 0
     PUD_DOWN = 1
     PUD_UP = 2
 
     attr_reader :pin, :last_value, :value, :direction, :invert
-   
-    def wiring_to_gpio(pin)
-      gpio = pin
-      gpio = 17 if pin == 0
-      gpio
-    end 
 
-   def gpio_to_wiring(pin)
-      wiring = pin
-      wiring = 0 if pin == 17
-      wiring
-   end
-    
+    def wiring_to_gpio(pin)
+      @io.wpi_pin_to_gpio(pin)
+    end
+
     #Initializes a new GPIO pin.
     #
     # @param [Hash] options A hash of options
@@ -38,49 +30,45 @@ module Frankenpins
     # @option options [Symbol] :pull Use an internal pull-up/down resistor, either :up, :down, :none
     def initialize(options)
       options = {:direction => :in, :invert => false, :trigger => :both, :pull => :none}.merge options
-      @pin = wiring_to_gpio options[:pin]
+      @io = WiringPiSingleton.gpio_instance
+
+      @wiring_pin = options[:pin]
+      @pin = wiring_to_gpio(options[:pin])
       @direction = options[:direction]
       @invert = options[:invert]
       @trigger = options[:trigger]
       @pull = options[:pull]
-      @io = WiringPiSingleton.gpio_instance
 
       raise "Invalid direction. Options are :in or :out" unless [:in, :out].include? @direction
       raise "Invalid trigger. Options are :rising, :falling, or :both" unless [:rising, :falling, :both].include? @trigger
-     
+
       File.open("/sys/class/gpio/export", "w") { |f| f.write("#{@pin}") }
       File.open(direction_file, "w") { |f| f.write(@direction == :out ? "out" : "in") }
 
       if @pull == :up || @pull == :down
-        #pull_dir = @pull == :up ? "up" : "down"
-	#`gpio mode #{gpio_to_wiring(@pin)} #{pull_dir}`
-
-        wiring_pin = gpio_to_wiring(@pin)
-        #@io.pin_mode(wiring_pin,INPUT)
         direction = PUD_UP   if @pull == :up
         direction = PUD_DOWN if @pull == :down
-        puts "direction #{direction}"
-        @io.pullUpDnControl(wiring_pin, direction)
+        @io.pullUpDnControl(@wiring_pin, direction)
       end
 
-      read 
+      read
     end
-    
+
     # If the pin has been initialized for output this method will set the logic level high.
     def on
       File.open(value_file, 'w') {|f| f.write("1") } if direction == :out
     end
-    
+
     # Tests if the logic level is high.
     def on?
       not off?
     end
-    
+
     # If the pin has been initialized for output this method will set the logic level low.
     def off
       File.open(value_file, 'w') {|f| f.write("0") } if direction == :out
     end
-    
+
     # Tests if the logic level is low.
     def off?
       value == 0
@@ -91,7 +79,7 @@ module Frankenpins
     def update_value(new_value)
       !new_value || new_value == 0 ? off : on
     end
-    
+
     # Tests if the logic level has changed since the pin was last read.
     def changed?
       last_value != value
@@ -104,7 +92,7 @@ module Frankenpins
       loop do
         fd.read
         IO.select(nil, nil, [fd], nil)
-        read 
+        read
         if changed?
           next if @trigger == :rising and value == 0
           next if @trigger == :falling and value == 1
@@ -113,14 +101,14 @@ module Frankenpins
       end
     end
 
-    # Reads the current value from the pin. Without calling this method first, `value`, `last_value` and `changed?` will not be updated. 
+    # Reads the current value from the pin. Without calling this method first, `value`, `last_value` and `changed?` will not be updated.
     # In short, you must call this method if you are curious about the current state of the pin.
-    def read 
+    def read
       @last_value = @value
       val = File.read(value_file).to_i
       @value = invert ? (val ^ 1) : val
     end
-    
+
     private
     def value_file
       "/sys/class/gpio/gpio#{pin}/value"
@@ -133,6 +121,6 @@ module Frankenpins
     def direction_file
       "/sys/class/gpio/gpio#{pin}/direction"
     end
-  
+
   end
 end

@@ -10,5 +10,5 @@ Gem::Specification.new do |s|
   s.homepage    =
     ''
   s.license       = 'Apache'
-#  s.add_runtime_dependency "wiringpi", ">= 1.1.0"
+  s.add_runtime_dependency "unobservable", ">= 0.11.0"
 end
