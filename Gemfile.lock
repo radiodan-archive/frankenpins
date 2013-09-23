@@ -1,6 +1,6 @@
 GIT
-  remote: git://github.com/libbymiller/WiringPi2-Ruby.git
-  revision: 94ea4b6cc6bbdc5a133c1678673c65c24d6a04d7
+  remote: git://github.com/andrewn/WiringPi2-Ruby.git
+  revision: 83076d7ca83320609d81f06861b7d9b23157b2c0
   specs:
     wiringpi2 (1.0.0)
 
