@@ -44,6 +44,7 @@ module Frankenpins
 
     private
     def create_pins_from_options_hash!(options)
+      options[:pull] = :up unless options.has_key?(:pull)
       pin_a_num = options.delete(:pin_a)
       pin_b_num = options.delete(:pin_b)
       pin_a = Frankenpins::Pin.new(options.merge(:pin => pin_a_num))
