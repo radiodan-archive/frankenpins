@@ -1,6 +1,10 @@
 require_relative '../lib/frankenpins'
 
-button = Frankenpins::Button.new(:pin => 0, :pull => :up)
+# Create a new Button attached to Wiring Pi pin #0.
+# By default, the built-in pull-up resistor will be used.
+# To use your own external resistor, pass in :pull => :none
+# as an option
+button = Frankenpins::Button.new(:pin => 0)
 
 button.on :pressed do
   puts "Button pressed"
@@ -14,4 +18,5 @@ button.on :changed do
   puts "Button changed"
 end
 
+puts "Push the button..."
 Frankenpins.wait

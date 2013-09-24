@@ -9,6 +9,8 @@ module Frankenpins
     attr_event :changed
 
     def initialize(options)
+      options[:pull] = :up unless options.has_key?(:pull)
+
       @pin = Frankenpins::Pin.new(options)
       @pin.watch do |pin|
         if pin.value == 0
