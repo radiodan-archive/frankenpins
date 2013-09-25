@@ -28,11 +28,11 @@ module Frankenpins
 
       if(sum == 0b1101 || sum == 0b0100 || sum == 0b0010 || sum == 0b1011)
         @position += 1
-        raise_event :changed, @position
+        raise_event :changed, @position, :clockwise
       end
       if(sum == 0b1110 || sum == 0b0111 || sum == 0b0001 || sum == 0b1000)
         @position -= 1
-        raise_event :changed, @position
+        raise_event :changed, @position, :anticlockwise
       end
 
       @last_val = encoded
