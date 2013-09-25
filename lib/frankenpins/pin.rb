@@ -48,7 +48,7 @@ module Frankenpins
       if @pull == :up || @pull == :down
         direction = PUD_UP   if @pull == :up
         direction = PUD_DOWN if @pull == :down
-        @io.pullUpDnControl(@wiring_pin, direction)
+        @io.pull_up_dn_control(@wiring_pin, direction)
       end
 
       read
