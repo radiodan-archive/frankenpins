@@ -6,10 +6,19 @@ A small library to make working with physical buttons on the Raspberry Pi easier
 Installation
 ---
 
-Frankenpins currently relies on a branch of the WiringPi2 library, so you need to add both dependencies to your Gemfile as follows:
+Frankenpins currently relies on an unreleased version of the WiringPi2 library, so you need to add both dependencies to your Gemfile as follows:
 
-    gem 'wiringpi2',   :github => 'andrewn/WiringPi2-Ruby'
+    gem 'wiringpi2',   :github => 'Gadgetoid/WiringPi2-Ruby'
     gem 'frankenpins', :github => 'radiodan/frankenpins'
+
+The do a `sudo bundle install` to install them (see 'Sudo' below).
+
+Sudo
+---
+
+You need to run your code as `sudo` so it can access the GPIO pins.
+
+    $ sudo bundle exec bin/start
 
 Pin numbering
 ---
