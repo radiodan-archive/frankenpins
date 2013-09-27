@@ -8,7 +8,6 @@ Installation
 
 Frankenpins currently relies on an unreleased version of the WiringPi2 library, so you need to add both dependencies to your Gemfile as follows:
 
-    gem 'wiringpi2',   :github => 'Gadgetoid/WiringPi2-Ruby'
     gem 'frankenpins', :github => 'radiodan/frankenpins'
 
 The do a `sudo bundle install` to install them (see 'Sudo' below).

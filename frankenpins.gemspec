@@ -9,6 +9,8 @@ Gem::Specification.new do |s|
   s.files       = ["lib/frankenpins.rb"]
   s.homepage    =
     ''
-  s.license       = 'Apache'
+  s.license       = 'Apache 2'
+
+  s.add_runtime_dependency "wiringpi2"   , ">= 2.0.0"
   s.add_runtime_dependency "unobservable", ">= 0.11.0"
 end
