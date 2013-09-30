@@ -6,11 +6,15 @@ A small library to make working with physical buttons on the Raspberry Pi easier
 Installation
 ---
 
-Frankenpins currently relies on an unreleased version of the WiringPi2 library, so you need to add both dependencies to your Gemfile as follows:
+To use Frankenpins using Rubygems:
 
-    gem 'frankenpins', :github => 'radiodan/frankenpins'
+    gem install frankenpins
 
-The do a `sudo bundle install` to install them (see 'Sudo' below).
+If you're using Bundler, put the following in your `Gemfile`:
+
+  gem 'frankenpins'
+
+Then run `sudo bundle install` to install the gem (see 'Sudo' below).
 
 Sudo
 ---
@@ -63,10 +67,16 @@ Finally, we tell Frankenpins to keep the program running until we quit it. Other
 Pins
 ---
 
-Frankenpins is based on the great [Pi Piper]() library, and uses a modified version of the Pin class which means you can register for events whenever a pin changes value. Check `examples/raw_pin.rb` for sample code.
+Frankenpins Pin event implementation is based on the great [Pi Piper](https://github.com/jwhitehorn/pi_piper) library, and uses a modified version of the Pin class which means you can register for events whenever a pin changes value. Check `examples/raw_pin.rb` for sample code.
+
+Versioning
+---
+
+We use [Semantic Versioning](http://semver.org/) and as this is pre-1.0.0 software, anything may change at any time.
 
 Development
 ---
 
 It's very early days for this library so any help is gratefully received.
 
+Raise an issue in Github to discuss what you'd like to see included.
