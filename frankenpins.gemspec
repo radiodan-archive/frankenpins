@@ -7,8 +7,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Andrew Nicolaou"]
   s.email       = 'andrew.nicolaou@bbc.co.uk'
   s.files       = ["lib/frankenpins.rb"]
-  s.homepage    =
-    ''
+  s.homepage    = 'https://github.com/radiodan/frankenpins'
   s.license       = 'Apache 2'
 
   s.add_runtime_dependency "wiringpi2"   , ">= 2.0.0"
