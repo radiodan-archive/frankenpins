@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'frankenpins'
-  s.version     = '0.0.0'
+  s.version     = '0.2.0'
   s.date        = '2013-08-28'
   s.summary     = "Connect buttons etc to your Rapsberry Pi"
   s.description = "Connect buttons etc to your Rapsberry Pi"
