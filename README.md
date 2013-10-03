@@ -12,7 +12,7 @@ To use Frankenpins using Rubygems:
 
 If you're using Bundler, put the following in your `Gemfile`:
 
-  gem 'frankenpins'
+    gem 'frankenpins'
 
 Then run `sudo bundle install` to install the gem (see 'Sudo' below).
 
