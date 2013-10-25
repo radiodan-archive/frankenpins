@@ -14,7 +14,7 @@ module Frankenpins
     PUD_DOWN = 1
     PUD_UP = 2
 
-    attr_reader :pin, :last_value, :value, :direction, :invert
+    attr_reader :io, :pin, :wiring_pin, :last_value, :value, :direction, :invert
 
     def wiring_to_gpio(pin)
       @io.wpi_pin_to_gpio(pin)
