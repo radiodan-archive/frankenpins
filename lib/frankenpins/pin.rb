@@ -109,6 +109,11 @@ module Frankenpins
       @value = invert ? (val ^ 1) : val
     end
 
+    def write(value)
+      value = value ? "1" : "0"
+      File.open(value_file, 'w') {|f| f.write(value) } if direction == :out
+    end
+
     private
     def value_file
       "/sys/class/gpio/gpio#{pin}/value"
