@@ -35,6 +35,5 @@ led.on!(:brightness => 0.8)
 
 sleep(2)
 
-# Fade the LED off over a second
-puts "Turning off"
+puts "Turn LED off"
 led.off!
