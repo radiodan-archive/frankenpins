@@ -1,17 +1,18 @@
-GIT
-  remote: git://github.com/andrewn/WiringPi2-Ruby.git
-  revision: 83076d7ca83320609d81f06861b7d9b23157b2c0
+PATH
+  remote: .
   specs:
-    wiringpi2 (1.0.0)
+    frankenpins (0.2.0)
+      unobservable (>= 0.11.0)
+      wiringpi2 (>= 2.0.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
     unobservable (0.11.0)
+    wiringpi2 (2.0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  unobservable (~> 0.11.0)
-  wiringpi2!
+  frankenpins!

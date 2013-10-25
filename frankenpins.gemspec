@@ -10,6 +10,6 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/radiodan/frankenpins'
   s.license       = 'Apache 2'
 
-  s.add_runtime_dependency "wiringpi2"   , ">= 2.0.0"
-  s.add_runtime_dependency "unobservable", ">= 0.11.0"
+  s.add_runtime_dependency "wiringpi2"   , "~> 2.0.0"
+  s.add_runtime_dependency "unobservable", "~> 0.11.0"
 end
