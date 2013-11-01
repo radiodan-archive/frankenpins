@@ -1,10 +1,5 @@
 module Frankenpins
   class LED
-    include Unobservable::Support
-
-    attr_event :on
-    attr_event :off
-    attr_event :changed
 
     def initialize(options={})
       options[:direction] = :out
