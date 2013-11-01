@@ -13,7 +13,7 @@ module Frankenpins
       pwm_write(value)
     end
 
-    def on!(opts={:brightness => nil, :duration => nil})
+    def on(opts={:brightness => nil, :duration => nil})
       if opts[:duration]
         fade_for_duration(opts[:duration])
       elsif opts[:brightness]
@@ -25,7 +25,7 @@ module Frankenpins
       end
     end
 
-    def off!(opts={:duration => nil})
+    def off(opts={:duration => nil})
       if opts[:duration]
         fade_for_duration(opts[:duration], :down)
       elsif @using_pwm
