@@ -9,14 +9,8 @@ module Frankenpins
       @pwm_increment_in_secs = 0.01
     end
 
-    def use_pwm!
-      @pin.io.soft_pwm_create(@pin.wiring_pin, 0, @pwm_range) unless @using_pwm
-      @using_pwm = true
-    end
-
     def brightness=(value)
-      use_pwm!
-      @pin.io.soft_pwm_write(@pin.wiring_pin, value.to_i)
+      pwm_write(value)
     end
 
     def on!(opts={:brightness => nil, :duration => nil})
@@ -27,7 +21,7 @@ module Frankenpins
       elsif @using_pwm
         self.brightness = @pwm_range
       else
-        @pin.write(true)
+        digital_write(true)
       end
     end
 
@@ -37,11 +31,26 @@ module Frankenpins
       elsif @using_pwm
         self.brightness = 0
       else
-        @pin.write(false)
+        digital_write(false)
       end
     end
 
     private
+
+    def digital_write(value)
+      @pin.write(value)
+    end
+
+    def use_pwm!
+      @pin.io.soft_pwm_create(@pin.wiring_pin, 0, @pwm_range) unless @using_pwm
+      @using_pwm = true
+    end
+
+    def pwm_write(value)
+      use_pwm!
+      @pin.io.soft_pwm_write(@pin.wiring_pin, value.to_i)
+    end
+
     def fade_for_duration(duration_in_secs, direction=:up)
       fade_for_duration_in_increments_of(duration_in_secs, @pwm_increment_in_secs, direction)
     end
