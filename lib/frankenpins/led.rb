@@ -1,31 +1,44 @@
 module Frankenpins
   class LED
 
+    attr_reader :default_duration
+    attr_writer :default_duration
+
     def initialize(options={})
       options[:direction] = :out
       @pin = Frankenpins::Pin.new(options)
       @using_pwm = false
       @pwm_range = 100
       @pwm_increment_in_secs = 0.01
-      @brightness = 100
+      @brightness = 0
       @is_on = false
+      @default_duration = nil
 
       @debug = false
     end
 
-    def brightness=(value)
-      @brightness = value
-      pwm_write(value) if on?
+    def brightness(value, opts={:duration => nil})
+      duration = opts[:duration] || @default_duration
+      if duration
+        transition(
+          :duration => duration,
+          :from     => @brightness,
+          :to       => value
+        )
+      else
+        change_brightness(value)
+      end
     end
 
     def on(opts={:duration => nil})
+      duration = opts[:duration] || @default_duration
       @is_on = true
-      if opts[:duration]
-        fade_for_duration(opts[:duration])
-      elsif @brightness == 100 && !@using_pwm
+      if duration
+        brightness(100, :duration => duration)
+      elsif !@using_pwm
         digital_write(true)
       else
-        pwm_write(@brightness)
+        brightness(@brightness)
       end
     end
 
@@ -38,10 +51,11 @@ module Frankenpins
     end
 
     def off(opts={:duration => nil})
-      if opts[:duration]
-        fade_for_duration(opts[:duration], :down)
+      duration = opts[:duration] || @default_duration
+      if duration
+        brightness(0, :duration => duration)
       elsif @using_pwm
-        self.brightness = 0
+        brightness(0)
       else
         digital_write(false)
       end
@@ -50,6 +64,11 @@ module Frankenpins
     end
 
     private
+
+    def change_brightness(value)
+      pwm_write(value) if on?
+      @brightness = value
+    end
 
     def digital_write(value)
       puts "digital_write(#{value})" if @debug
@@ -62,30 +81,26 @@ module Frankenpins
     end
 
     def pwm_write(value)
-      puts "pwm_write(#{value})" if @debug
       use_pwm!
       @pin.io.soft_pwm_write(@pin.wiring_pin, value.to_i)
     end
 
-    def fade_for_duration(duration_in_secs, direction=:up)
-      puts "fade_for_duration(#{duration_in_secs}, #{direction})" if @debug
-      fade_for_duration_in_increments_of(duration_in_secs, @pwm_increment_in_secs, direction)
-    end
+    def transition(properties)
+      duration_in_secs = properties[:duration]
+      from_value       = properties[:from]
+      to_value         = properties[:to]
 
-    def fade_for_duration_in_increments_of(duration_in_secs, increment_time_in_sec, direction)
+      range = to_value - from_value
+      increment_time_in_sec = @pwm_increment_in_secs
+
       increment = increment_time_in_sec.to_f / duration_in_secs.to_f
       steps = (duration_in_secs.to_f / increment_time_in_sec.to_f).to_i
 
-      brightness_value = direction == :up ? 0 : @pwm_range
+      brightness_value = from_value
 
       steps.times.each do
-        if direction == :up
-          brightness_value = brightness_value + (increment * @pwm_range)
-        else
-          brightness_value = brightness_value - (increment * @pwm_range)
-        end
-
-        self.brightness = brightness_value
+        brightness_value = brightness_value + (increment * range)
+        change_brightness(brightness_value)
         sleep(increment_time_in_sec)
       end
     end
