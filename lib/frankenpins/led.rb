@@ -34,8 +34,8 @@ module Frankenpins
       duration = opts[:duration] || @default_duration
       @is_on = true
       if duration
-        brightness(100, :duration => duration)
-      elsif !@using_pwm
+        brightness(@brightness, :duration => duration)
+      elsif @brightness == 0 || @brightness == 100
         digital_write(true)
       else
         brightness(@brightness)
