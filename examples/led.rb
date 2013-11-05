@@ -38,3 +38,5 @@ sleep(2)
 
 puts "Turn LED off"
 led.off
+
+Frankenpins.wait

@@ -1,109 +1,139 @@
+require 'ostruct'
+require 'thread'
+Thread.abort_on_exception = true
+
 module Frankenpins
   class LED
 
-    attr_reader :default_duration
-    attr_writer :default_duration
+    # A transition of the brightness of
+    # the LED.
+    # Transitions encode all the info
+    # necessary to change the state
+    class Transition < OpenStruct
+
+      def perform!
+        if type == :digital
+          digital_write(value)
+        elsif duration
+          transition!
+        elsif type == :pwm
+          pwm_write(value)
+        end
+      end
+
+      def transition!
+        duration_in_secs = duration
+        from_value       = from
+        to_value         = to
+        increment_time_in_sec = 0.01
+
+        range = to_value - from_value
+
+        increment = increment_time_in_sec.to_f / duration_in_secs.to_f
+        steps = (duration_in_secs.to_f / increment_time_in_sec.to_f).to_i
+
+        brightness_value = from_value
+
+        steps.times.each do
+          brightness_value = brightness_value + (increment * range)
+          pwm_write(brightness_value)
+          sleep(increment_time_in_sec)
+        end
+      end
+
+      def digital_write(value)
+        pin.write(value)
+      end
+
+      def pwm_write(value)
+        # puts "pwm_write(#{pin.wiring_pin}, #{value.to_i})"
+        pin.io.soft_pwm_write(pin.wiring_pin, value.to_i)
+      end
+    end
+
+    # A transition queue
+    # Items added to the queue are
+    # executed in order
+    class TransitionQueue
+      def initialize
+        @queue = Queue.new
+        @debug = false
+      end
+
+      def push(transition)
+        puts "E: #{transition.type} #{transition}" if @debug
+        @queue.push(transition)
+      end
+
+      def start!
+        Thread.new do
+          loop do
+            transition = @queue.pop
+            puts "D: #{transition.type} #{transition}" if @debug
+            transition.perform!
+          end
+        end
+      end
+    end
 
     def initialize(options={})
       options[:direction] = :out
       @pin = Frankenpins::Pin.new(options)
+
       @using_pwm = false
-      @pwm_range = 100
-      @pwm_increment_in_secs = 0.01
+      @pwm_max   = 100
+
+      @is_on = false
       @brightness = 0
-      @is_on = false
-      @default_duration = nil
 
-      @debug = false
+      @queue = TransitionQueue.new
+      @queue.start!
     end
 
-    def brightness(value, opts={:duration => nil})
-      duration = opts[:duration] || @default_duration
-      if duration
-        transition(
-          :duration => duration,
-          :from     => @brightness,
-          :to       => value
-        )
-      else
-        change_brightness(value)
-      end
-    end
-
-    def on(opts={:duration => nil})
-      duration = opts[:duration] || @default_duration
+    def on(opts={})
+      brightness(100, opts)
       @is_on = true
-      if duration
-        brightness(@brightness, :duration => duration)
-      elsif @brightness == 0 || @brightness == 100
-        digital_write(true)
-      else
-        brightness(@brightness)
-      end
     end
 
-    def on?
-      @is_on
-    end
-
-    def off?
-      !@is_on
-    end
-
-    def off(opts={:duration => nil})
-      duration = opts[:duration] || @default_duration
-      if duration
-        brightness(0, :duration => duration)
-      elsif @using_pwm
-        brightness(0)
-      else
-        digital_write(false)
-      end
-
+    def off(opts={})
+      brightness(0, opts)
       @is_on = false
     end
 
-    private
+    def brightness(value, opts={})
 
-    def change_brightness(value)
-      pwm_write(value) if on?
+      duration = opts[:duration]
+
+      if value != 100 || value != 0 || duration
+        use_pwm!
+      end
+
+      props = { :pin => @pin }
+
+      if duration
+        props[:type]     = :pwm
+        props[:from]     = @brightness
+        props[:to]       = value
+        props[:duration] = duration
+      elsif @using_pwm
+        props[:type]  = :pwm
+        props[:value] = value
+      else
+        props[:type]  = :digital
+        props[:value] = false if @brightness == 0
+        props[:value] = true  if @brightness == 100
+      end
+
+      @queue.push(Transition.new(props))
       @brightness = value
     end
 
-    def digital_write(value)
-      puts "digital_write(#{value})" if @debug
-      @pin.write(value)
-    end
-
+    private
     def use_pwm!
-      @pin.io.soft_pwm_create(@pin.wiring_pin, 0, @pwm_range) unless @using_pwm
-      @using_pwm = true
-    end
-
-    def pwm_write(value)
-      use_pwm!
-      @pin.io.soft_pwm_write(@pin.wiring_pin, value.to_i)
-    end
-
-    def transition(properties)
-      duration_in_secs = properties[:duration]
-      from_value       = properties[:from]
-      to_value         = properties[:to]
-
-      range = to_value - from_value
-      increment_time_in_sec = @pwm_increment_in_secs
-
-      increment = increment_time_in_sec.to_f / duration_in_secs.to_f
-      steps = (duration_in_secs.to_f / increment_time_in_sec.to_f).to_i
-
-      brightness_value = from_value
-
-      steps.times.each do
-        brightness_value = brightness_value + (increment * range)
-        change_brightness(brightness_value)
-        sleep(increment_time_in_sec)
+      if @using_pwm == false
+        @pin.io.soft_pwm_create(@pin.wiring_pin, 0, @pwm_max)
+        @using_pwm = true
       end
     end
-
   end
 end
