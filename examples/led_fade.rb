@@ -36,16 +36,18 @@ led.off(:duration => 1)
 
 sleep(2)
 
-# puts "4. Always transition over 2s"
-# led.default_duration = 2
-# puts "   on"
-# led.on  # over 2s
-# sleep(1)
-# puts "   20% brightness"
-# led.brightness(20)
-# sleep(1)
-# puts "   off"
-# led.off # over 2s
+puts "4. Always transition over 2s"
+led.default_duration = 2
+puts "   on"
+led.on  # over 2s
+sleep(1)
+puts "   20% brightness"
+led.brightness(20)
+sleep(1)
+puts "   off"
+led.off # over 2s
+
+puts "Finished!"
 
 Frankenpins.wait
 

@@ -76,6 +76,9 @@ module Frankenpins
       end
     end
 
+    attr_reader :default_duration
+    attr_writer :default_duration
+
     def initialize(options={})
       options[:direction] = :out
       @pin = Frankenpins::Pin.new(options)
@@ -85,6 +88,9 @@ module Frankenpins
 
       @is_on = false
       @brightness = 0
+
+      # TODO: Should be 0?
+      @default_duration = nil
 
       @queue = TransitionQueue.new
       @queue.start!
@@ -102,7 +108,7 @@ module Frankenpins
 
     def brightness(value, opts={})
 
-      duration = opts[:duration]
+      duration = opts[:duration] || @default_duration
 
       if value != 100 || value != 0 || duration
         use_pwm!
