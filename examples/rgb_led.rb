@@ -10,13 +10,27 @@ colours = {
   :blue   => [0  , 0  , 255  ],
   :yellow => [255, 255, 0    ],
   :aqua   => [0  , 255, 255  ],
-  :indigo => [0x4B, 0x0, 0x82]
+  :indigo => [0x4B, 0x0, 0x82] # Hex colour
 }
 
+led.on
+
+puts "Change colours"
 colours.each do |name, rgb|
   puts "#{name.to_s}  #{rgb}"
-  led.on!(:rgb => rgb)
+  led.rgb(rgb)
   sleep(2)
 end
 
-led.off!
+puts "Fade between colours"
+colours.each do |name, rgb|
+  puts "#{name.to_s}  #{rgb}"
+  led.rgb(rgb, :duration => 2)
+  sleep(2)
+end
+
+led.off(:duration => 2)
+
+puts "Finished"
+
+Frankenpins.wait

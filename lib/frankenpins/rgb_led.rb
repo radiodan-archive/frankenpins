@@ -5,25 +5,37 @@ module Frankenpins
     attr_reader :green
     attr_reader :blue
 
+    attr_reader :default_duration
+    attr_writer :default_duration
+
     def initialize(options={})
+      @is_on = false
       @pin_nums = options.delete(:pins)
       @red   = LED.new( config_for_pin(@pin_nums[:red], options) )
       @green = LED.new( config_for_pin(@pin_nums[:green], options) )
       @blue  = LED.new( config_for_pin(@pin_nums[:blue], options) )
+
+      @default_duration = nil
     end
 
-    def on!(opts)
-      if opts[:rgb]
-        rgb(*opts[:rgb].map { |val| rgb_val_to_brightness(val) })
-      elsif opts[:percent]
-        rgb(*opts[:percent])
-      end
+    def on(opts={})
+      [@red, @green, @blue].map { |led| led.on(opts) }
+      rgb(opts[:rgb]) if opts[:rgb]
+      percentage(opts[:percent]) if opts[:percent]
+      @is_on = true
     end
 
-    def off!
-      @red.off!
-      @green.off!
-      @blue.off!
+    def off(opts={})
+      [@red, @green, @blue].map { |led| led.off(opts) }
+      @is_off = true
+    end
+
+    def rgb(rgb, opts={})
+      write_colours(*rgb.map { |val| rgb_val_to_brightness(val) }, opts)
+    end
+
+    def percentage(rgb, opts={})
+      write_colours(*rgb, opts)
     end
 
     private
@@ -37,10 +49,11 @@ module Frankenpins
       opts
     end
 
-    def rgb(r, g, b)
-      @red.on!(:brightness   => r)
-      @green.on!(:brightness => g)
-      @blue.on!(:brightness  => b)
+    def write_colours(r, g, b, opts={})
+      duration = opts[:duration] || @default_duration
+      @red.brightness(r, :duration => duration)
+      @green.brightness(g, :duration => duration)
+      @blue.brightness(b, :duration => duration)
     end
 
     # e.g. 30/255 -> ?/100
