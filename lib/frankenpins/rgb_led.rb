@@ -1,10 +1,6 @@
 module Frankenpins
   class RGBLED
 
-    attr_reader :red
-    attr_reader :green
-    attr_reader :blue
-
     attr_reader :default_duration
     attr_writer :default_duration
 
