@@ -6,15 +6,15 @@ require_relative '../lib/frankenpins'
 # as an option
 button = Frankenpins::Button.new(:pin => 0)
 
-button.on :pressed do
+button.when :pressed do
   puts "Button pressed"
 end
 
-button.on :released do
+button.when :released do
   puts "Button released"
 end
 
-button.on :changed do
+button.when :changed do
   puts "Button changed"
 end
 

@@ -43,7 +43,7 @@ Frankenpins is event-based.
     require 'frankenpins'
 
     button = Frankenpins::Button.new(:pin => 0, :pull => :up)
-    button.on :pressed do
+    button.when :pressed do
       puts "Button pressed"
     end
 
@@ -55,7 +55,7 @@ First we create a new button, telling the library that the button is on wiring p
 
 Then we register a block of code to be called whenever the button is pressed down:
 
-    button.on :pressed do
+    button.when :pressed do
       puts "Button pressed"
     end
 

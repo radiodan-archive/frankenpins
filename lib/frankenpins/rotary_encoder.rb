@@ -38,7 +38,7 @@ module Frankenpins
       @last_val = encoded
     end
 
-    def on(event_name, &block)
+    def when(event_name, &block)
       send(event_name).register(&block)
     end
 
