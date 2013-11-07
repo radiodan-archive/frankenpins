@@ -2,79 +2,11 @@ require 'ostruct'
 require 'thread'
 Thread.abort_on_exception = true
 
+require_relative './led_transition'
+require_relative './transition_queue'
+
 module Frankenpins
   class LED
-
-    # A transition of the brightness of
-    # the LED.
-    # Transitions encode all the info
-    # necessary to change the state
-    class Transition < OpenStruct
-
-      def perform!
-        if type == :digital
-          digital_write(value)
-        elsif duration
-          transition!
-        elsif type == :pwm
-          pwm_write(value)
-        end
-      end
-
-      def transition!
-        duration_in_secs = duration
-        from_value       = from
-        to_value         = to
-        increment_time_in_sec = 0.01
-
-        range = to_value - from_value
-
-        increment = increment_time_in_sec.to_f / duration_in_secs.to_f
-        steps = (duration_in_secs.to_f / increment_time_in_sec.to_f).to_i
-
-        brightness_value = from_value
-
-        steps.times.each do
-          brightness_value = brightness_value + (increment * range)
-          pwm_write(brightness_value)
-          sleep(increment_time_in_sec)
-        end
-      end
-
-      def digital_write(value)
-        pin.write(value)
-      end
-
-      def pwm_write(value)
-        # puts "pwm_write(#{pin.wiring_pin}, #{value.to_i})"
-        pin.io.soft_pwm_write(pin.wiring_pin, value.to_i)
-      end
-    end
-
-    # A transition queue
-    # Items added to the queue are
-    # executed in order
-    class TransitionQueue
-      def initialize
-        @queue = Queue.new
-        @debug = false
-      end
-
-      def push(transition)
-        puts "E: #{transition.type} #{transition}" if @debug
-        @queue.push(transition)
-      end
-
-      def start!
-        Thread.new do
-          loop do
-            transition = @queue.pop
-            puts "D: #{transition.type} #{transition}" if @debug
-            transition.perform!
-          end
-        end
-      end
-    end
 
     attr_reader :default_duration
     attr_writer :default_duration
@@ -130,7 +62,7 @@ module Frankenpins
         props[:value] = true  if @brightness == 100
       end
 
-      @queue.push(Transition.new(props))
+      @queue.push(LEDTransition.new(props))
       @brightness = value
     end
 
