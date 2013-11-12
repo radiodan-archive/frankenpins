@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = "Connect buttons etc to your Rapsberry Pi"
   s.authors     = ["Andrew Nicolaou"]
   s.email       = 'andrew.nicolaou@bbc.co.uk'
-  s.files       = ["lib/frankenpins.rb"]
+  s.files       = `git ls-files`.split($/)
   s.homepage    = 'https://github.com/radiodan/frankenpins'
   s.license       = 'Apache 2'
 
