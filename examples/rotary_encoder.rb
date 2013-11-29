@@ -7,14 +7,14 @@ require_relative '../lib/frankenpins'
 # option :pull => :none
 encoder = Frankenpins::RotaryEncoder.new(:pin_a => 4, :pin_b => 5)
 
-encoder.on :changed do |pos, direction|
+encoder.when :changed do |pos, direction|
   puts "position: #{pos}, direction: #{direction}"
 end
 
 # Use the Button class to watch the switch part of the
 # encoder, push down to activate
 button = Frankenpins::Button.new(:pin => 1)
-button.on :pressed do
+button.when :pressed do
   puts "Button pressed"
 end
 
